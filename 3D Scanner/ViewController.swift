@@ -30,8 +30,57 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
+        
+        checkCameraPermissions()
     }
 
-
+    // function that checks for the camera persmissions
+    private func checkCameraPermissions() {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .notDetermined:
+            // request permission
+            AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
+                guard granted else {
+                    return
+                }
+                DispatchQueue.main.async {
+                    self?.setUpCamera()
+                }
+            }
+        case .restricted:
+            break
+        case .denied:
+            break
+        case .authorized:
+            setUpCamera()
+        @unknown default:
+            break
+        }
+    }
+    
+    // function that sets up the camera
+    private func setUpCamera() {
+        // if you can find the device, input and output, add it to the session then run it
+        let session = AVCaptureSession()
+        if let device = AVCaptureDevice.default(for: .video) {
+            do {
+                let input = try AVCaptureDeviceInput(device: device)
+                if session.canAddInput(input) {
+                    session.addInput(input)
+                }
+                if session.canAddOutput(output) {
+                    session.addOutput(output)
+                }
+                
+                previewLayer.videoGravity = .resizeAspectFill
+                previewLayer.session = session
+                
+                session.startRunning()
+                self.session = session
+            } catch {
+                print(error)
+            }
+        }
+    }
 }
 
