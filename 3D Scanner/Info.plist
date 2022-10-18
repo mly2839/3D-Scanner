@@ -3,20 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeName</key>
-			<string>NSCameraUsageDescription</string>
-			<key>LSHandlerRank</key>
-			<string>Default</string>
-		</dict>
-		<dict>
-			<key>CFBundleTypeName</key>
-			<string>NSMicrophoneUsageDescription</string>
-			<key>LSHandlerRank</key>
-			<string>Default</string>
-		</dict>
-	</array>
+	<array/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

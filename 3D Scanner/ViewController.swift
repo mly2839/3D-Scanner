@@ -20,18 +20,31 @@ class ViewController: UIViewController {
     let previewLayer = AVCaptureVideoPreviewLayer()
     // Shutter Button
     private let shutterButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
-        button.layer.cornerRadius = 100
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        button.layer.cornerRadius = 50
         button.layer.borderWidth = 10
         button.layer.borderColor = UIColor.white.cgColor
         return button
     }()
     
+    // overiding the default view
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
-        
+        view.layer.addSublayer(previewLayer)
+        view.addSubview(shutterButton)
         checkCameraPermissions()
+        
+        shutterButton.addTarget(self, action: #selector(didTapTakePhoto), for: .touchUpInside)
+    }
+    
+    // overiding the default subview layout
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        previewLayer.frame = view.bounds
+        
+        shutterButton.center = CGPoint(x: view.frame.size.width/2,
+                                       y: view.frame.size.height - 100)
     }
 
     // function that checks for the camera persmissions
@@ -82,5 +95,27 @@ class ViewController: UIViewController {
             }
         }
     }
+    
+    // function that handles the action of taking a photo
+    @objc private func didTapTakePhoto() {
+        output.capturePhoto(with: AVCapturePhotoSettings(),
+                            delegate: self)
+    }
 }
 
+// Extension that handles the image after taking it
+extension ViewController: AVCapturePhotoCaptureDelegate {
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        guard let data = photo.fileDataRepresentation() else {
+            return
+        }
+        let image = UIImage(data: data)
+        
+        session?.stopRunning()
+        
+        let imageView = UIImageView(image: image)
+        imageView.contentMode = .scaleAspectFill
+        imageView.frame = view.bounds
+        view.addSubview(imageView)
+    }
+}
